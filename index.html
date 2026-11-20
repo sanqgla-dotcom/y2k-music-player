@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MY FAVOURITE SONG - Y2K Audio Deck</title>
+  <!-- Font pixel retro + Font hỗ trợ tiếng Việt sắc nét -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@500;700&family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Biểu tượng desktop hiện ra khi đóng cửa sổ để bấm mở lại -->
+  <div id="desktop-icon" class="desktop-icon hidden" title="Bấm để mở lại trình phát nhạc">
+    <div class="icon-box">🎵</div>
+    <span>Y2K Deck</span>
+  </div>
+
+  <!-- Cửa sổ trình phát nhạc chính -->
+  <div id="player-window" class="win95-window">
+    <!-- 1. Thanh tiêu đề (Cầm vào đây để kéo thả) -->
+    <div id="title-bar" class="title-bar">
+      <div class="title-left">
+        <span class="note-icon">🎵</span>
+        <span class="title-text">MY FAVOURITE SONG</span>
+      </div>
+      <div class="title-controls">
+        <button id="btn-minimize" class="win-btn win-ctrl" title="Thu gọn">_</button>
+        <button id="btn-close" class="win-btn win-ctrl" title="Đóng">X</button>
+      </div>
+    </div>
+
+    <!-- Toàn bộ phần thân cửa sổ -->
+    <div id="window-body" class="window-body">
+      <!-- 2. Thanh chọn Mode -->
+      <div class="mode-bar">
+        <div class="mode-label">🎵 Mode:</div>
+        <div class="mode-options">
+          <label class="retro-radio">
+            <input type="radio" name="mode" id="mode-local" value="local" checked />
+            <span class="radio-dot local-dot"></span>
+            <span>Local Music</span>
+          </label>
+          <label class="retro-radio">
+            <input type="radio" name="mode" id="mode-youtube" value="youtube" />
+            <span class="radio-dot yt-dot"></span>
+            <span>YouTube</span>
+          </label>
+          <label class="retro-radio">
+            <input type="radio" name="mode" id="mode-spotify" value="spotify" />
+            <span class="radio-dot sp-dot"></span>
+            <span>Spotify</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- 3. Màn hình chính -->
+      <div id="screen-area" class="screen-area">
+        <!-- Nút mở danh sách Queue ở góc phải trên -->
+        <button id="btn-queue-toggle" class="queue-badge">
+          📑 QUEUE (<span id="queue-count">0</span>)
+        </button>
+
+        <!-- Giao diện chia đôi khi phát Local Music (Ảnh bìa + Thông tin) -->
+        <div id="local-screen" class="local-screen">
+          <div class="cover-box">
+            <img id="cover-art" src="" alt="Album Cover" class="hidden" />
+            <div id="cover-placeholder" class="cover-placeholder">💿</div>
+          </div>
+          <div class="local-meta">
+            <div class="now-playing-tag">
+              <span class="pulse-dot"></span> NOW PLAYING
+            </div>
+            <div id="local-title" class="track-title">Chưa có bài hát nào</div>
+            <div id="local-artist" class="track-artist">Chọn file .mp3 hoặc .wav bên dưới</div>
+          </div>
+        </div>
+
+        <!-- Giao diện Video khi phát YouTube -->
+        <div id="yt-player-wrap" class="yt-player-wrap hidden">
+          <div id="yt-player"></div>
+          <div class="yt-overlay">
+            <div class="now-playing-tag">
+              <span class="pulse-dot"></span> NOW PLAYING
+            </div>
+            <div id="yt-title" class="track-title">Dán link YouTube và nhấn Load</div>
+            <div id="yt-artist" class="track-artist">YouTube Audio Deck</div>
+          </div>
+          <div id="sp-player-wrap" class="yt-player-wrap hidden">
+  <iframe id="sp-iframe" style="border:0; width:100%; height:100%;" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+</div>
+        </div>
+
+        <!-- Ngăn kéo hiển thị danh sách Queue -->
+        <div id="queue-drawer" class="queue-drawer hidden">
+          <div class="queue-header">
+            <span>PLAYLIST QUEUE</span>
+            <button id="btn-close-queue" class="win-btn mini-btn">✕</button>
+          </div>
+          <ul id="queue-list" class="queue-list">
+            <li class="queue-empty">Danh sách trống</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 4. Thanh trạng thái Y2K AUDIO DECK + Tốc độ phát -->
+      <div class="status-strip">
+        <div class="status-left">
+          <span id="status-dot" class="status-dot idle"></span>
+          <span id="status-text">Ready</span>
+        </div>
+        <div class="status-right">
+          <span class="deck-label">Y2K AUDIO DECK</span>
+          <button id="btn-speed" class="win-btn speed-btn" title="Đổi tốc độ phát">1x</button>
+        </div>
+      </div>
+
+      <!-- 5. Thanh thời gian + Sóng nhạc Audio Visualizer -->
+      <div class="visualizer-row">
+        <span id="time-current" class="time-text">00:00</span>
+        <div class="visualizer-frame" title="Bấm vào sóng nhạc để tua">
+          <canvas id="visualizer-canvas" width="290" height="24"></canvas>
+        </div>
+        <span id="time-duration" class="time-text">00:00</span>
+      </div>
+
+      <!-- 6. Hàng nút điều khiển + Thanh âm lượng nút vàng -->
+      <div class="controls-row">
+        <div class="transport-group">
+          <button id="btn-prev" class="win-btn ctrl-btn" title="Bài trước">⏮</button>
+          <button id="btn-play" class="win-btn ctrl-btn play-color" title="Phát / Tạm dừng">▶</button>
+          <button id="btn-stop" class="win-btn ctrl-btn stop-color" title="Dừng hẳn">■</button>
+          <button id="btn-next" class="win-btn ctrl-btn" title="Bài kế tiếp">⏭</button>
+          <button id="btn-loop" class="win-btn ctrl-btn loop-color" title="Lặp lại bài hát">🔁</button>
+        </div>
+
+        <div class="volume-group">
+          <span class="vol-icon">🔊</span>
+          <input id="volume-slider" type="range" min="0" max="100" value="80" class="retro-slider" />
+        </div>
+      </div>
+
+      <!-- 7a. Thanh nhập file cho Local Music -->
+      <div id="local-input-bar" class="input-bar">
+        <input id="file-input" type="file" accept=".mp3,.wav,.ogg,.m4a,audio/*" multiple hidden />
+        <button id="btn-add-music" class="win-btn flex-btn">📂 Add Music (.mp3, .wav...)</button>
+        <button id="btn-clear-local" class="win-btn clear-btn">Clear</button>
+      </div>
+
+      <!-- 7b. Thanh dán link cho YouTube -->
+      <div id="yt-input-bar" class="input-bar hidden">
+        <input id="yt-url-input" type="text" class="retro-input" placeholder="https://www.youtube.com/watch?v=..." />
+        <button id="btn-load-yt" class="win-btn load-btn">▶ Load</button>
+      </div>
+      <div id="sp-input-bar" class="input-bar hidden">
+  <input id="sp-url-input" type="text" class="retro-input" placeholder="https://open.spotify.com/track/..." />
+  <button id="btn-load-sp" class="win-btn load-btn">▶ Load</button>
+</div>
+    </div>
+  </div>
+
+  <!-- Thẻ Audio phát nhạc cục bộ -->
+  <audio id="audio-element" crossorigin="anonymous"></audio>
+
+  <!-- Thư viện đọc ảnh bìa & ID3 tag từ file MP3 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+  <!-- YouTube IFrame Player API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="app.js"></script>
+</body>
+</html>
