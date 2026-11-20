@@ -1,0 +1,28 @@
+name: Build Mac App
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build_mac:
+    runs-on: macos-latest
+    steps:
+      - name: Tải mã nguồn
+        uses: actions/checkout@v4
+
+      - name: Cài đặt Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Cài đặt thư viện
+        run: npm install
+
+      - name: Đóng gói file Mac (.dmg)
+        run: npx electron-builder --mac
+
+      - name: Lưu file kết quả
+        uses: actions/upload-artifact@v4
+        with:
+          name: Y2K-Music-Mac
+          path: dist/*.dmg
